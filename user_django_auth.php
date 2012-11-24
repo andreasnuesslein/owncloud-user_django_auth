@@ -3,8 +3,10 @@
 /**
  * ownCloud
  *
- * @author Steffen Zieger
- * @copyright 2012 Steffen Zieger <me@saz.sh>
+ * @author Andreas Nüßlein
+ * @copyright 2012 Andreas Nüßlein <andreas@nuessle.in>
+ * @author steffen zieger
+ * @copyright 2012 steffen zieger <me@saz.sh>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
@@ -21,29 +23,29 @@
  *
  */
 
-class OC_User_Redmine extends OC_User_Backend {
-    protected $redmine_db_host;
-    protected $redmine_db_name;
-    protected $redmine_db_user;
-    protected $redmine_db_password;
+class OC_User_Django_Auth extends OC_User_Backend {
+    protected $django_auth_db_host;
+    protected $django_auth_db_name;
+    protected $django_auth_db_user;
+    protected $django_auth_db_password;
     protected $db;
     protected $db_conn;
 
     function __construct() {
         $this->db_conn = false;
-        $db_host = OC_Appconfig::getValue('user_redmine', 'redmine_db_host','');
-        $db_name = OC_Appconfig::getValue('user_redmine', 'redmine_db_name','');
-        $db_driver = OC_Appconfig::getValue('user_redmine', 'redmine_db_driver', 'mysql');
-        $db_user = OC_Appconfig::getValue('user_redmine', 'redmine_db_user','');
-        $db_password = OC_Appconfig::getValue('user_redmine', 'redmine_db_password','');
+        $db_host = OC_Appconfig::getValue('user_django_auth', 'django_auth_db_host','');
+        $db_name = OC_Appconfig::getValue('user_django_auth', 'django_auth_db_name','');
+        $db_driver = OC_Appconfig::getValue('user_django_auth', 'django_auth_db_driver', 'mysql');
+        $db_user = OC_Appconfig::getValue('user_django_auth', 'django_auth_db_user','');
+        $db_password = OC_Appconfig::getValue('user_django_auth', 'django_auth_db_password','');
         $dsn = "${db_driver}:host=${db_host};dbname=${db_name}";
 
         try {
             $this->db = new PDO($dsn, $db_user, $db_password);
             $this->db_conn = true;
         } catch (PDOException $e) {
-            OC_Log::write('OC_User_Redmine',
-                'OC_User_Redmine, Failed to connect to redmine database: ' . $e->getMessage(),
+            OC_Log::write('OC_User_Django_Auth',
+                'OC_User_Django_Auth, Failed to connect to django auth database: ' . $e->getMessage(),
                 OC_Log::ERROR);
         }
         return false;
@@ -58,13 +60,13 @@ class OC_User_Redmine extends OC_User_Backend {
             return false;
         }
 
-        $sql = 'SELECT mail FROM users WHERE login = :uid';
+        $sql = 'SELECT email FROM auth_user WHERE username = :uid';
         $sth = $this->db->prepare($sql);
         if ($sth->execute(array(':uid' => $uid))) {
             $row = $sth->fetch();
 
             if ($row) {
-                if (OC_Preferences::setValue($uid, 'settings', 'email', $row['mail'])) {
+                if (OC_Preferences::setValue($uid, 'settings', 'email', $row['email'])) {
                     return true;
                 }
             }
@@ -83,15 +85,15 @@ class OC_User_Redmine extends OC_User_Backend {
             return false;
         }
 
-        $sql = 'SELECT login FROM users WHERE login = :uid';
-        $sql .= ' AND hashed_password = SHA1(CONCAT(salt, SHA1(:password)))';
+        $sql = 'SELECT username FROM auth_user WHERE username = :uid AND ';
+        $sql .= 'SUBSTRING(password,12) = SHA1(CONCAT(SUBSTRING(password,6,5),:password))';
         $sth = $this->db->prepare($sql);
         if ($sth->execute(array(':uid' => $uid, ':password' => $password))) {
             $row = $sth->fetch();
 
             if ($row) {
                 $this->setEmail($uid);
-                return $row['login'];
+                return $row['username'];
             }
         }
         return false;
@@ -112,12 +114,11 @@ class OC_User_Redmine extends OC_User_Backend {
         $offset = (int)$offset;
         $limit = (int)$limit;
 
-        $sql = 'SELECT login FROM users WHERE status < 3';
-        $sql .= " AND login != ''";
+        $sql = "SELECT username FROM auth_user WHERE password != ''";
         if (!empty($search)) {
-            $sql .= " AND login LIKE :search";
+            $sql .= " AND username LIKE :search";
         }
-        $sql .= ' ORDER BY login';
+        $sql .= ' ORDER BY username';
         if ($limit) {
             $sql .= ' LIMIT :offset,:limit';
         }
@@ -133,7 +134,7 @@ class OC_User_Redmine extends OC_User_Backend {
 
         if ($sth->execute()) {
             while ($row = $sth->fetch()) {
-                $users[] = $row['login'];
+                $users[] = $row['username'];
             }
         }
         return $users;
@@ -149,7 +150,7 @@ class OC_User_Redmine extends OC_User_Backend {
             return false;
         }
 
-        $sql = 'SELECT login FROM users WHERE login = :uid';
+        $sql = 'SELECT username FROM auth_user WHERE username = :uid';
         $sth = $this->db->prepare($sql);
         if ($sth->execute(array(':uid' => $uid))) {
             $row = $sth->fetch();

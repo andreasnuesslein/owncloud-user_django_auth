@@ -1,8 +1,10 @@
 <?php
 
 /**
- * ownCloud - user_redmine
+ * ownCloud - user_django_auth
  *
+ * @author Andreas Nüßlein
+ * @copyright 2012 Andreas Nüßlein <andreas@nuessle.in>
  * @author Steffen Zieger
  * @copyright 2012 Steffen Zieger <me@saz.sh>
  *
@@ -21,29 +23,29 @@
  *
  */
 $params = array(
-    'redmine_db_host',
-    'redmine_db_user',
-    'redmine_db_password',
-    'redmine_db_name',
-    'redmine_db_driver'
+    'django_auth_db_host',
+    'django_auth_db_user',
+    'django_auth_db_password',
+    'django_auth_db_name',
+    'django_auth_db_driver'
 );
 
 if ($_POST) {
     foreach($params as $param){
         if(isset($_POST[$param])){
-            OC_Appconfig::setValue('user_redmine', $param, $_POST[$param]);
+            OC_Appconfig::setValue('user_django_auth', $param, $_POST[$param]);
         }
     }
 }
 
 // fill template
-$tmpl = new OC_Template( 'user_redmine', 'settings');
+$tmpl = new OC_Template( 'user_django_auth', 'settings');
 foreach($params as $param){
     $default = '';
-    if ($param == 'redmine_db_driver') {
+    if ($param == 'django_auth_db_driver') {
         $default = 'mysql';
     }
-    $value = OC_Appconfig::getValue('user_redmine', $param, $default);
+    $value = OC_Appconfig::getValue('user_django_auth', $param, $default);
     $tmpl->assign($param, $value);
 }
 

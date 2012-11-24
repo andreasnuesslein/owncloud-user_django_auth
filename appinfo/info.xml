@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <info>
-    <id>user_redmine</id>
-    <name>Redmine user backend</name>
-    <description>Authenticate users using Redmine Database</description>
-    <version>0.3</version>
+    <id>user_django_auth</id>
+    <name>Django Auth user backend</name>
+    <description>Authenticate users using Django's Auth Database</description>
+    <version>0.1</version>
     <licence>AGPL</licence>
-    <author>Steffen Zieger &lt;me@saz.sh&gt;</author>
+    <author>Andreas Nüßlein &lt;andreas@nuessle.in&gt;</author>
     <require>4</require>
     <types>
         <authentication/>
