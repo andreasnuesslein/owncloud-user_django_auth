@@ -85,8 +85,9 @@ class OC_User_Django_Auth extends OC_User_Backend {
             return false;
         }
 
-        $sql = 'SELECT username FROM auth_user WHERE username = :uid AND ';
-        $sql .= 'SUBSTRING(password,12) = SHA1(CONCAT(SUBSTRING(password,6,5),:password))';
+        $sql = 'SELECT username FROM auth_user WHERE username = :uid';
+        $sql .= ' AND is_active';
+        $sql .= ' AND SUBSTRING(password,12) = SHA1(CONCAT(SUBSTRING(password,6,5),:password))';
         $sth = $this->db->prepare($sql);
         if ($sth->execute(array(':uid' => $uid, ':password' => $password))) {
             $row = $sth->fetch();
@@ -115,6 +116,7 @@ class OC_User_Django_Auth extends OC_User_Backend {
         $limit = (int)$limit;
 
         $sql = "SELECT username FROM auth_user WHERE password != ''";
+        $sql .= " AND is_active";
         if (!empty($search)) {
             $sql .= " AND username LIKE :search";
         }
