@@ -87,7 +87,7 @@ class OC_User_Django_Auth extends OC_User_Backend {
 
         $sql = 'SELECT username FROM auth_user WHERE username = :uid';
         $sql .= ' AND is_active';
-        $sql .= ' AND SUBSTRING(password,12) = SHA1(CONCAT(SUBSTRING(password,6,5),:password))';
+        $sql .= ' AND SUBSTRING_INDEX(password,"$",-1) = SHA1(CONCAT(SUBSTRING_INDEX(SUBSTRING(password,6),"$",1),:password))';
         $sth = $this->db->prepare($sql);
         if ($sth->execute(array(':uid' => $uid, ':password' => $password))) {
             $row = $sth->fetch();
