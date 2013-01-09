@@ -127,7 +127,8 @@ class OC_User_Django_Auth extends OC_User_Backend {
 
         $sth = $this->db->prepare($sql);
         if (!empty($search)) {
-            $sth->bindParam(':search', '%'.$search.'%', PDO::PARAM_STR);
+            $searchplus = '%'.$search.'%';
+            $sth->bindParam(':search', $searchplus, PDO::PARAM_STR);
         }
         if ($limit) {
             $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
