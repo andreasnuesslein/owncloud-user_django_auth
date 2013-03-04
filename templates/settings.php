@@ -34,6 +34,7 @@
                 value="<?php echo $_['django_auth_db_password']; ?>" />
         </p>
 
+        <input type="hidden" name="requesttoken" value="<?php echo $_['requesttoken'] ?>" id="requesttoken">
         <input type="submit" value="Save" />
     </fieldset>
 </form>

@@ -23,30 +23,33 @@
  *
  */
 $params = array(
-    'django_auth_db_host',
-    'django_auth_db_user',
-    'django_auth_db_password',
-    'django_auth_db_name',
-    'django_auth_db_driver'
+  'django_auth_db_host',
+  'django_auth_db_user',
+  'django_auth_db_password',
+  'django_auth_db_name',
+  'django_auth_db_driver'
 );
 
+OCP\User::checkAdminUser();
+
 if ($_POST) {
-    foreach($params as $param){
-        if(isset($_POST[$param])){
-            OC_Appconfig::setValue('user_django_auth', $param, $_POST[$param]);
-        }
+  OCP\JSON::callCheck();
+  foreach($params as $param){
+    if(isset($_POST[$param])){
+      OC_Appconfig::setValue('user_django_auth', $param, $_POST[$param]);
     }
+  }
 }
 
 // fill template
 $tmpl = new OC_Template( 'user_django_auth', 'settings');
 foreach($params as $param){
-    $default = '';
-    if ($param == 'django_auth_db_driver') {
-        $default = 'mysql';
-    }
-    $value = OC_Appconfig::getValue('user_django_auth', $param, $default);
-    $tmpl->assign($param, $value);
+  $default = '';
+  if ($param == 'django_auth_db_driver') {
+    $default = 'mysql';
+  }
+  $value = OC_Appconfig::getValue('user_django_auth', $param, $default);
+  $tmpl->assign($param, $value);
 }
 
 return $tmpl->fetchPage();
