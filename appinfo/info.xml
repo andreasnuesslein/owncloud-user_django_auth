@@ -3,10 +3,9 @@
     <id>user_django_auth</id>
     <name>Django Auth user backend</name>
     <description>Authenticate users using Django's Auth Database</description>
-    <version>0.1</version>
     <licence>AGPL</licence>
     <author>Andreas Nüßlein &lt;andreas@nuessle.in&gt;</author>
-    <require>4</require>
+    <require>4.93</require>
     <types>
         <authentication/>
     </types>

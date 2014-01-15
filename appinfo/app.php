@@ -23,11 +23,12 @@
 *
 */
 
-require_once('apps/user_django_auth/user_django_auth.php');
+require_once OC_App::getAppPath('user_django_auth').'/user_django_auth.php';
 
-OCP\App::registerAdmin('user_django_auth','settings');
+OC_APP::registerAdmin('user_django_auth','settings');
 
 // register user backend
+OC_User::registerBackend("django_auth");
 OC_User::useBackend( 'django_auth' );
 
 // add settings page to navigation
@@ -35,5 +36,5 @@ $entry = array(
     'id'   => 'user_django_auth_settings',
     'order'=> 1,
     'href' => OC_Helper::linkTo( "user_django_auth", "settings.php" ),
-    'name' => 'Django Auth'
+    'name' => 'django_auth'
 );

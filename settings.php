@@ -30,7 +30,7 @@ $params = array(
   'django_auth_db_driver'
 );
 
-OCP\User::checkAdminUser();
+OC_Util::checkAdminUser();
 
 if ($_POST) {
   OCP\JSON::callCheck();
@@ -42,7 +42,7 @@ if ($_POST) {
 }
 
 // fill template
-$tmpl = new OC_Template( 'user_django_auth', 'settings');
+$tmpl = new OCP\Template( 'user_django_auth', 'settings');
 foreach($params as $param){
   $default = '';
   if ($param == 'django_auth_db_driver') {
